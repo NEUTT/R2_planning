@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_core
   moveit_ros_planning
   tf_conversions
+  eigen_conversions
 )
 
 catkin_package(
@@ -18,6 +19,7 @@ catkin_package(
     moveit_core
     moveit_ros_planning
     tf_conversions
+    eigen_conversions
 )
 
 include_directories(include

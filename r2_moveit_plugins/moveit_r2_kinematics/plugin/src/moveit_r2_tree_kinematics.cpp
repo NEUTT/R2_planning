@@ -78,23 +78,22 @@ bool MoveItR2TreeKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &i
     return getPositionIK(ik_pose, ik_seed_state, solution, error_code, options);
 }
 
-#define F_EQ(a, b) fabs(a - b) < 1e-4
+#define F_EQ(a, b) fabs(a - b) < 1e-3
 
 static bool equalPoses(const geometry_msgs::Pose& pose1, const geometry_msgs::Pose& pose2)
 {
+  //ROS_WARN_STREAM("MoveItR2TreeKinematicsPlugin:TT_searchPositionIK RUN*******no position");
     // position
     if (!F_EQ(pose1.position.x, pose2.position.x) ||
         !F_EQ(pose1.position.y, pose2.position.y) ||
         !F_EQ(pose1.position.z, pose2.position.z))
         return false;
-
     // orientation
     if (!F_EQ(pose1.orientation.x, pose2.orientation.x) ||
         !F_EQ(pose1.orientation.y, pose2.orientation.y) ||
         !F_EQ(pose1.orientation.z, pose2.orientation.z) ||
         !F_EQ(pose1.orientation.w, pose2.orientation.w))
         return false;
-
     return true;
 }
 
@@ -119,7 +118,6 @@ bool MoveItR2TreeKinematicsPlugin::searchPositionIK(const std::vector<geometry_m
         ROS_ERROR("This IK method is meant for a robot with a floating base");
         return false;
     }
-
     // Creating the seed state
     robot_state::RobotStatePtr state(new robot_state::RobotState(interface_->getRobotModel()));
     const std::vector<int>& group_state_bijection = interface_->getGroupToRobotStateBijection();
@@ -127,25 +125,49 @@ bool MoveItR2TreeKinematicsPlugin::searchPositionIK(const std::vector<geometry_m
     for(size_t i = 0; i < ik_seed_state.size(); ++i)
         joint_angles[group_state_bijection[i]] = ik_seed_state[i];
     state->update();  // forward kinematics
-
     TreeIkRequest request;
     TreeIkResponse response;
 
     // Hopefully one of the tips is at the same pose as the seed state
     std::string fixed_link("");
     std::string moving_link("");
+     ROS_WARN("tip_frames_.size():%ld",tip_frames_.size());
+
     for(size_t i = 0; i < tip_frames_.size(); ++i)
     {
         // NOTE: The ik_poses are given in the coordinate frame of base_frame_.  Should probably transform the
         // pose below into global frame in case the global frame is NOT the base_frame_.
+        
         const Eigen::Isometry3d& pose = state->getGlobalLinkTransform(tip_frames_[i]);
+        //ROS_WARN_STREAM("state"<<pose.matrix());
+
         geometry_msgs::Pose pose_msg;
         tf::poseEigenToMsg(pose, pose_msg);
 
+    //   ROS_WARN_STREAM("MoveItR2TreeKinematicsPlugin:TT_searchPositionIK RUN*******3");
+    ROS_WARN_STREAM("pose_msg.postion:"<<pose_msg.position);
+    // ROS_WARN_STREAM("pose_msg.orientation:"<<pose_msg.orientation);
+
+    ROS_WARN_STREAM("ik_poses["<<i<<"] postion:"<<ik_poses[i].position);
+    // ROS_WARN_STREAM("ik_poses["<<i<<"] orientation:"<<ik_poses[i].orientation);
+    // ROS_WARN_STREAM("fabs  postion : x:"<<fabs(pose_msg.position.x - ik_poses[i].position.x)<<" ,y:"
+    //                 <<fabs(pose_msg.position.y - ik_poses[i].position.y)<<" ,z:"
+    //                 <<fabs(pose_msg.position.z - ik_poses[i].position.z));
+    // ROS_WARN_STREAM("fabs  orientation : x:"<<fabs(pose_msg.orientation.x - ik_poses[i].orientation.x)<<" ,y:"
+    //             <<fabs(pose_msg.orientation.y - ik_poses[i].orientation.y)<<" ,z:"
+    //             <<fabs(pose_msg.orientation.z - ik_poses[i].orientation.z)<<" ,w:"
+    //             <<fabs(pose_msg.orientation.w - ik_poses[i].orientation.w) );      
+
+
+
         if (equalPoses(pose_msg, ik_poses[i]))
+        {
             request.addFixedLink(tip_frames_[i]);
+            ROS_WARN_STREAM("MoveItR2TreeKinematicsPlugin:TT_searchPositionIK RUN*******3"); 
+        }
         else
             request.addLinkPose(tip_frames_[i], ik_poses[i]);
+            //request.addFixedLink("world");
     }
 
     // Not sure which link to set as the fixed base
@@ -203,6 +225,7 @@ bool MoveItR2TreeKinematicsPlugin::searchPositionIK(const std::vector<geometry_m
 
         return true;
     }
+
     return false;
 }
 

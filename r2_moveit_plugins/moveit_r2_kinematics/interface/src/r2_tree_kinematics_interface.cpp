@@ -31,6 +31,9 @@ bool R2TreeKinematicsInterface::initialize(const std::string& robot_description,
                                            const std::string& base_frame,
                                            const std::vector<std::string>& tip_frames)
 {
+    ROS_WARN_STREAM("robot_description:"<<robot_description<<"\n group_name:"<<group_name
+                    <<"\n base_frame:"<<base_frame<<"\n tip_frames[0]:"<<tip_frames[0]);
+
     // Loading URDF and SRDF
     rdf_loader::RDFLoader rdf_loader(robot_description);
     // const boost::shared_ptr<srdf::Model> &srdf = rdf_loader.getSRDF();
@@ -99,6 +102,7 @@ bool R2TreeKinematicsInterface::initialize(const std::string& robot_description,
 
     ik_->getJointNames(joint_names_);  // reading in ALL joint names from IK representation
 
+   
     const std::vector<const robot_model::JointModel*>& joint_roots = jmg->getJointRoots();
     mobile_base_ = false;
     mobile_base_variable_count_ = 0;
@@ -108,6 +112,7 @@ bool R2TreeKinematicsInterface::initialize(const std::string& robot_description,
         if (joint_roots[i]->getType() == robot_model::JointModel::FLOATING)
         {
             base_joint_ = joint_roots[i]->getName();
+           // ROS_WARN_STREAM("TT:"<<joint_roots[i]->getName());
             mobile_base_ = true;
             mobile_base_variable_count_ = joint_roots[i]->getVariableCount();
         }
@@ -127,6 +132,7 @@ bool R2TreeKinematicsInterface::initialize(const std::string& robot_description,
     else
         total_dofs_ = default_joints.size() - mobile_base_variable_count_;
     default_joint_positions_.resize(total_dofs_);
+    //ROS_WARN_STREAM("TT_total_dofs_:"<<total_dofs_);
 
     // ROS_INFO("Initializing MobileTreeIK for \"%s\" with %u DOFs", group_name.c_str(), total_dofs_);
 
@@ -138,6 +144,7 @@ bool R2TreeKinematicsInterface::initialize(const std::string& robot_description,
     const KDL::Tree& kdl_tree = ik_->getTree();
     for (size_t i = 0; i < joint_names_.size(); ++i)
     {
+        //ROS_WARN_STREAM("TT_joint_names_:"<<joint_names_[i]);
         const moveit::core::VariableBounds& bounds = robot_model_->getVariableBounds(joint_names_[i]);
         std::pair<double, double> limits(bounds.min_position_, bounds.max_position_);
 
@@ -229,13 +236,14 @@ bool R2TreeKinematicsInterface::initialize(const std::string& robot_description,
     ik_->setMaxJointVel(MAX_JOINT_VELOCITY); // remove when kinematics works
     //ik_->setMaxTwist(MAX_TWIST);
     //ik_->setMBar(1e-12);
- ROS_ERROR("***********************************************************");
+     //ROS_ERROR("***********************************************************");
     return true;
 }
 
 bool R2TreeKinematicsInterface::getPositionFK(const std::vector<double> &joint_angles,
                                               std::map<std::string, KDL::Frame>& frames) const
 {
+    ROS_WARN_STREAM("TT_getPositionFK RUN");
     // Set the input joint values to the defaults
     // Change the joint values to those specified in link_names and joint_angles
     KDL::JntArray joints_in = default_joint_positions_;
@@ -270,6 +278,7 @@ bool R2TreeKinematicsInterface::getPositionFK(const std::vector<double> &joint_a
 
 bool R2TreeKinematicsInterface::getPositionIk(const TreeIkRequest& request, TreeIkResponse& response) const
 {
+    ROS_WARN_STREAM("TT_getPositionIk RUN");
     // convert geometry_msgs::Pose into KDL frames
     std::vector<KDL::Frame> frames;
     const std::vector<geometry_msgs::Pose>& poses = request.getMovingLinkPoses();

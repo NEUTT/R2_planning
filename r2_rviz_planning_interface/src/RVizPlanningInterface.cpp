@@ -79,8 +79,8 @@ R2Planning::R2Planning(QWidget* parent) : rviz::Panel(parent), r2Interface("robo
     //// BASE FRAME STUFF ////
     QGroupBox* baseGroup = new QGroupBox("Base frame");
 
-    leftBaseButton_ = new QRadioButton("iiwa14_1_ee");
-    rightBaseButton_ = new QRadioButton("Right gripper");
+    leftBaseButton_ = new QRadioButton("iiwa14_1_link_ee");
+    rightBaseButton_ = new QRadioButton("iiwa14_3_link_ee");
     noBaseButton_ = new QRadioButton("World");
 
     QPushButton* resetButton = new QPushButton("Reset Position");
@@ -352,7 +352,7 @@ void R2Planning::baseSwitch()
     else if (rightBaseButton_->isChecked())
     {
         std_msgs::String msg;
-        msg.data = "r2/right_leg/gripper/tip";
+        msg.data = "iiwa14_1_link_ee";
         changeBasePub_.publish(msg);
     }
     else

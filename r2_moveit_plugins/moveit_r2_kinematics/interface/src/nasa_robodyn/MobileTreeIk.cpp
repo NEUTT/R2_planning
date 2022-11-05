@@ -113,7 +113,8 @@ void MobileTreeIk::initialize()
     newTree.addChain(baseChain, "world_base");
     newTree.addTree(tree, robotModelBase);
     tree = newTree;
-
+    std::stringstream tttest;
+    tttest << "ttttt****************laotian: MobileTreeIk::initialize was excuted********************************************tttt";
     KdlTreeTr::initialize();
 }
 

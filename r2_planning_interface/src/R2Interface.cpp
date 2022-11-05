@@ -57,9 +57,9 @@ R2Interface::R2Interface(const std::string& robot_description) : psm_(new planni
 
     // HACK.  TODO: Fix this
     std::vector<std::string> tip_frames;
-    tip_frames.push_back("r2/right_ankle_roll");
-    tip_frames.push_back("r2/left_ankle_roll");
-    std::string group_name("legs");
+    tip_frames.push_back("iiwa14_1_link_7");
+    tip_frames.push_back("iiwa14_3_link_7");
+    std::string group_name("arms");
     std::string base_frame("virtual_world");
     treeKinematics_ = new moveit_r2_kinematics::R2TreeKinematicsInterface();
     if(!treeKinematics_->initialize(robot_description, group_name, base_frame, tip_frames))

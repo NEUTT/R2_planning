@@ -52,6 +52,7 @@ public:
             interface.gazeboLocalization(true);
         else
             interface.fakeLocalization(true);
+        
         localizer = boost::thread(&Localizer::localizerThread, this);
     }
 
@@ -189,7 +190,7 @@ protected:
 int main(int argc, char** argv)
 {
     ros::init(argc, argv, "localizer");
-    ros::AsyncSpinner spinner(0); // use # threads = num cores
+    ros::AsyncSpinner spinner(2); // use # threads = num cores
     spinner.start();
 
     ros::NodeHandle nh("localizer");
@@ -202,5 +203,6 @@ int main(int argc, char** argv)
     localizer.resetBase();
     localizer.start(gazebo);
 
-    ros::spin();
+ros::waitForShutdown();
+    //ros::spin();
 }

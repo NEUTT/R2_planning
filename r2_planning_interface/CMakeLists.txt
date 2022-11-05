@@ -14,7 +14,7 @@ endif()
 
 # find_package(Eigen3 REQUIRED)
 find_package(catkin COMPONENTS
-eigen_conversions
+  eigen_conversions
   roscpp
   moveit_msgs
   moveit_core
@@ -30,7 +30,7 @@ eigen_conversions
 # catkin_package defines the env vars used in install later
 catkin_package(
    LIBRARIES ${PROJECT_NAME}
-   CATKIN_DEPENDS roscpp moveit_msgs moveit_core moveit_ros_planning moveit_ros_move_group moveit_ros_warehouse moveit_ros_planning_interface r2_tree_kinematics
+   CATKIN_DEPENDS eigen_conversions roscpp moveit_msgs moveit_core moveit_ros_planning moveit_ros_move_group moveit_ros_warehouse moveit_ros_planning_interface r2_tree_kinematics
    DEPENDS
    INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include
 )

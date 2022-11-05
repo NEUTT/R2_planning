@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_core
   moveit_ros_planning
   tf_conversions
+  eigen_conversions
   r2_tree_kinematics
 )
 
@@ -19,6 +20,7 @@ catkin_package(
     moveit_core
     moveit_ros_planning
     tf_conversions
+    eigen_conversions
     r2_tree_kinematics
 )
 
